@@ -181,7 +181,7 @@ const UniformForm: React.FC = () => {
            <CardTitle className='md:text-4xl text-2xl font-bold text-gray-700'>Cadastro de Uniformes</CardTitle>
            <img src={logo}   alt="Jumentus SC" className="w-full h-32 md:h-64 object-contain" />
           </CardHeader>
-           <CardTitle className='md:text-4xl -mt-8 mb-8 text-center text-2xl font-bold text-yellow-700'>Valor R$: 130,00</CardTitle>
+           <CardTitle className='md:text-4xl -mt-8 mb-8 text-center text-2xl font-bold text-yellow-700'>Valor R$: 135,00</CardTitle>
 
           <CardContent className="px-8 pb-8 -mt-2 md:-mt-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
