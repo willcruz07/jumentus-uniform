@@ -236,7 +236,7 @@ const UniformForm: React.FC = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="nome" className="text-base font-semibold text-gray-700  block">
-                  Nome
+                  Nome (para o uniforme)
                 </Label>
                 <Input
                   id="nome"
