@@ -64,11 +64,16 @@ const UniformForm: React.FC = () => {
   // Validação em tempo real do número
   useEffect(() => {
     if (watchedNumero && watchedNumero > 0 && watchedNumero <= 99) {
+      console.log(`🔄 Iniciando verificação do número: ${watchedNumero}`);
+      
       const checkNumber = async () => {
         setNumberValidation({ status: 'checking', message: 'Verificando disponibilidade...' });
         
         try {
+          console.log(`📡 Chamando API para verificar número ${watchedNumero}`);
           const result = await uniformService.checkNumberAvailability(watchedNumero, watchedNome);
+          
+          console.log(`📋 Resultado da verificação:`, result);
           
           if (result.available) {
             setNumberValidation({
@@ -82,7 +87,8 @@ const UniformForm: React.FC = () => {
               existingAthlete: result.existingAthlete
             });
           }
-        } catch {
+        } catch (error) {
+          console.error('❌ Erro na verificação:', error);
           setNumberValidation({
             status: 'unavailable',
             message: '❌ Erro ao verificar número'
@@ -199,17 +205,17 @@ const UniformForm: React.FC = () => {
                   </SelectContent>
                 </Select>
                 {errors.tipo && (
-                  <p className="text-sm text-red-600 font-['Roboto'] font-medium">
+                  <p className="text-sm text-red-600  font-medium">
                     {errors.tipo.message}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tamanho" className="text-base font-semibold text-gray-700 font-['Roboto'] block">
+                <Label htmlFor="tamanho" className="text-base font-semibold text-gray-700  block">
                   Tamanho
                 </Label>
-                <Select onValueChange={(value) => setValue('tamanho', value as 'P' | 'M' | 'G' | 'GG')}>
+                <Select onValueChange={(value) => setValue('tamanho', value as 'PP' | 'P' | 'M' | 'G' | 'GG')}>
                   <SelectTrigger className="w-full h-14 bg-[#f1f1ef] border-2 border-gray-300 focus:border-[#D4B301] focus:bg-white text-base font-medium transition-all duration-200">
                     <SelectValue placeholder="Selecione o tamanho" />
                   </SelectTrigger>
@@ -222,14 +228,14 @@ const UniformForm: React.FC = () => {
                   </SelectContent>
                 </Select>
                 {errors.tamanho && (
-                  <p className="text-sm text-red-600 font-['Roboto'] font-medium">
+                  <p className="text-sm text-red-600  font-medium">
                     {errors.tamanho.message}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="nome" className="text-base font-semibold text-gray-700 font-['Roboto'] block">
+                <Label htmlFor="nome" className="text-base font-semibold text-gray-700  block">
                   Nome
                 </Label>
                 <Input
@@ -239,14 +245,14 @@ const UniformForm: React.FC = () => {
                   placeholder="Digite o nome completo"
                 />
                 {errors.nome && (
-                  <p className="text-sm text-red-600 font-['Roboto'] font-medium">
+                  <p className="text-sm text-red-600  font-medium">
                     {errors.nome.message}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="numero" className="text-base font-semibold text-gray-700 font-['Roboto'] block">
+                <Label htmlFor="numero" className="text-base font-semibold text-gray-700  block">
                   Número
                 </Label>
                 <Select onValueChange={(value) => setValue('numero', parseInt(value))}>
@@ -279,14 +285,14 @@ const UniformForm: React.FC = () => {
                     {numberValidation.status === 'unavailable' && (
                       <XCircle className="w-4 h-4 text-red-600" />
                     )}
-                    <span className="text-sm font-medium font-['Roboto']">
+                    <span className="text-sm font-medium ">
                       {numberValidation.message}
                     </span>
                   </div>
                 )}
                 
                 {errors.numero && (
-                  <p className="text-sm text-red-600 font-['Roboto'] font-medium">
+                  <p className="text-sm text-red-600  font-medium">
                     {errors.numero.message}
                   </p>
                 )}
@@ -303,7 +309,7 @@ const UniformForm: React.FC = () => {
                   ) : (
                     <AlertCircle className="w-6 h-6 text-red-600" />
                   )}
-                  <span className="font-['Roboto'] font-medium text-base">{message}</span>
+                  <span className=" font-medium text-base">{message}</span>
                 </div>
               )}
 
