@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { uniformSchema } from '../schemas/uniformSchema';
 import type { UniformFormData } from '../types/uniform';
 import { uniformService } from '../services/uniformService';
 import { signInAnonymous } from '../config/firebase';
-import { CheckCircle, AlertCircle, Loader2, XCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, XCircle, List } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
@@ -15,26 +15,28 @@ import jogador1 from '../assets/jogador-1.jpg';
 import jogador2 from '../assets/jogador-2.jpg';
 import logo from '../assets/jumentus.png';
 import Modal from './ui/modal';
+import UniformsList from './UniformsList';
 
 const UniformForm: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
-  const [tipoSelecionado, setTipoSelecionado] = useState<'Jogador' | 'Goleiro' | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState<'idle' | 'success' | 'error'>('idle');
+  const [message, setMessage] = React.useState('');
+  const [tipoSelecionado, setTipoSelecionado] = React.useState<'Jogador' | 'Goleiro' | null>(null);
+  const [showUniformsList, setShowUniformsList] = React.useState(false);
   
   // Estados para validação do número
-  const [numberValidation, setNumberValidation] = useState<{
+  const [numberValidation, setNumberValidation] = React.useState<{
     status: 'idle' | 'checking' | 'available' | 'unavailable';
     message: string;
     existingAthlete?: string;
   }>({ status: 'idle', message: '' });
 
   // Estados para o modal de confirmação
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [submittedData, setSubmittedData] = useState<UniformFormData | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+  const [submittedData, setSubmittedData] = React.useState<UniformFormData | null>(null);
 
   // Debug das imagens
-  useEffect(() => {
+  React.useEffect(() => {
     console.log('Jogador 1:', jogador1);
     console.log('Jogador 2:', jogador2);
   }, []);
@@ -62,12 +64,12 @@ const UniformForm: React.FC = () => {
   const watchedNome = watch('nome');
   const watchedTamanho = watch('tamanho');
 
-  useEffect(() => {
+  React.useEffect(() => {
     setTipoSelecionado(watchedTipo || null);
   }, [watchedTipo]);
 
   // Validação em tempo real do número
-  useEffect(() => {
+  React.useEffect(() => {
     if (watchedNumero && watchedNumero > 0 && watchedNumero <= 99) {
       console.log(`🔄 Iniciando verificação do número: ${watchedNumero}`);
       
@@ -157,6 +159,11 @@ const UniformForm: React.FC = () => {
     setSubmittedData(null);
   };
 
+  // Se estiver mostrando a lista de uniformes, renderizar apenas ela
+  if (showUniformsList) {
+    return <UniformsList onBack={() => setShowUniformsList(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
       <div className="absolute inset-0 flex overflow-hidden">
@@ -200,6 +207,8 @@ const UniformForm: React.FC = () => {
            <img src={logo}   alt="Jumentus SC" className="w-full h-32 md:h-64 object-contain" />
           </CardHeader>
            <CardTitle className='md:text-4xl -mt-8 mb-8 text-center text-2xl font-bold text-yellow-700'>Valor R$: 135,00</CardTitle>
+          
+          
 
           <CardContent className="px-8 pb-8 -mt-2 md:-mt-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -342,6 +351,15 @@ const UniformForm: React.FC = () => {
             </form>
           </CardContent>
         </Card>
+
+        <div onClick={() => setShowUniformsList(true)} className="flex cursor-pointer items-center justify-center mt-6 p-4 bg-white/80 rounded-xl mx-8">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <List className="w-5 h-5 text-gray-600" />
+                <span className="font-medium text-gray-700">Ver Lista</span>
+              </div>
+            </div>
+          </div>
       </div>
 
       {/* Modal de Confirmação de Sucesso */}
