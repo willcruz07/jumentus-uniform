@@ -3,7 +3,9 @@ import { uniformService } from '../services/uniformService';
 import { signInAnonymous } from '../config/firebase';
 import type { UniformFormData } from '../types/uniform';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Loader2, Users, Trophy, Shirt } from 'lucide-react';
+import { Button } from './ui/button';
+import { Loader2, Users, Trophy, Shirt, FileText, Download, Printer } from 'lucide-react';
+import { downloadSimpleUniformsPDF, printSimpleUniformsPDF, generateSimpleUniformsPDF } from '../utils/simplePdfGenerator';
 
 interface UniformsListProps {
   onBack: () => void;
@@ -20,7 +22,6 @@ const UniformsList: React.FC<UniformsListProps> = ({ onBack }) => {
         setIsLoading(true);
         setError(null);
         
-        // Fazer login anônimo se necessário
         await signInAnonymous();
         
         // Buscar todos os uniformes
@@ -53,6 +54,32 @@ const UniformsList: React.FC<UniformsListProps> = ({ onBack }) => {
   };
 
   const stats = getStatsData();
+
+  const handleDownloadPDF = () => {
+    downloadSimpleUniformsPDF(uniformes);
+  };
+
+  const handlePrintPDF = () => {
+    printSimpleUniformsPDF(uniformes);
+  };
+
+  const handleDownloadJogadoresOnly = () => {
+    const jogadores = uniformes.filter(u => u.tipo === 'Jogador');
+    const doc = generateSimpleUniformsPDF(jogadores, { 
+      title: 'Lista de Jogadores - Jumentus SC',
+      showStats: false 
+    });
+    doc.save('jogadores-jumentus.pdf');
+  };
+
+  const handleDownloadGoleirosOnly = () => {
+    const goleiros = uniformes.filter(u => u.tipo === 'Goleiro');
+    const doc = generateSimpleUniformsPDF(goleiros, { 
+      title: 'Lista de Goleiros - Jumentus SC',
+      showStats: false 
+    });
+    doc.save('goleiros-jumentus.pdf');
+  };
 
   if (isLoading) {
     return (
@@ -91,13 +118,37 @@ const UniformsList: React.FC<UniformsListProps> = ({ onBack }) => {
           <h1 className="text-4xl font-bold text-white mb-2">Uniformes Cadastrados</h1>
           <p className="text-gray-300">Total de {uniformes.length} uniformes</p>
           
-          {/* Botão Voltar */}
-          <button
-            onClick={onBack}
-            className="mt-4 px-6 py-2 bg-[#D4B301] text-[#16181a] rounded-xl font-bold hover:bg-[#B89400] transition-all duration-200 transform hover:scale-105"
-          >
-            ← Voltar ao Cadastro
-          </button>
+          {/* Botões de Ação */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
+            <button
+              onClick={onBack}
+              className="px-6 py-2 bg-[#D4B301] text-[#16181a] rounded-xl font-bold hover:bg-[#B89400] transition-all duration-200 transform hover:scale-105"
+            >
+              ← Voltar ao Cadastro
+            </button>
+            
+            {uniformes.length > 0 && (
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleDownloadPDF}
+                  variant="outline"
+                  className="bg-white/90 hover:bg-white text-gray-800 border-gray-300 font-medium"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar PDF
+                </Button>
+                
+                <Button
+                  onClick={handlePrintPDF}
+                  variant="outline"
+                  className="bg-white/90 hover:bg-white text-gray-800 border-gray-300 font-medium"
+                >
+                  <Printer className="w-4 h-4 mr-2" />
+                  Imprimir
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Estatísticas */}
@@ -201,6 +252,79 @@ const UniformsList: React.FC<UniformsListProps> = ({ onBack }) => {
                     <div className="text-sm font-medium text-gray-700">{tamanho}</div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Opções de Exportação Avançadas */}
+        {uniformes.length > 0 && (
+          <Card className="bg-white/90 mt-8">
+            <CardHeader>
+              <CardTitle className="text-center text-gray-800 flex items-center justify-center">
+                <FileText className="w-5 h-5 mr-2" />
+                Opções de Exportação
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <h4 className="font-semibold text-gray-700 mb-2">Lista Completa</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Todos os uniformes em uma única lista
+                  </p>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      onClick={handleDownloadPDF}
+                      size="sm"
+                      className="bg-[#D4B301] hover:bg-[#B89400] text-[#16181a]"
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      PDF
+                    </Button>
+                    <Button
+                      onClick={handlePrintPDF}
+                      size="sm"
+                      variant="outline"
+                      className="border-[#D4B301] text-[#D4B301] hover:bg-[#D4B301] hover:text-[#16181a]"
+                    >
+                      <Printer className="w-3 h-3 mr-1" />
+                      Imprimir
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <h4 className="font-semibold text-blue-700 mb-2">Apenas Jogadores</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Lista contendo apenas jogadores ({stats.totalJogadores})
+                  </p>
+                  <Button
+                    onClick={handleDownloadJogadoresOnly}
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={stats.totalJogadores === 0}
+                  >
+                    <Download className="w-3 h-3 mr-1" />
+                    PDF Jogadores
+                  </Button>
+                </div>
+
+                <div className="text-center">
+                  <h4 className="font-semibold text-green-700 mb-2">Apenas Goleiros</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Lista contendo apenas goleiros ({stats.totalGoleiros})
+                  </p>
+                  <Button
+                    onClick={handleDownloadGoleirosOnly}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    disabled={stats.totalGoleiros === 0}
+                  >
+                    <Download className="w-3 h-3 mr-1" />
+                    PDF Goleiros
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

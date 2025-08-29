@@ -201,16 +201,14 @@ const UniformForm: React.FC = () => {
 
       <div className=" relative z-10 w-full max-w-2xl rounded-2xl bg-transparent">
         <Card className="border-0 bg-white/65 shadow-none">
-          <CardHeader className="text-center -mt-2 md:-mt-8 pb-8 pt-8 flex flex-row items-center justify-center">
+          <CardHeader className="text-center md:h-56 h-40 -mt-2 md:-mt-8 pb-8 pt-8 flex flex-row items-center justify-center">
            <img src={logo}   alt="Jumentus SC" className="w-full h-32 md:h-64 object-contain" />
            <CardTitle className='md:text-4xl text-2xl font-bold text-gray-700'>Cadastro de Uniformes</CardTitle>
            <img src={logo}   alt="Jumentus SC" className="w-full h-32 md:h-64 object-contain" />
           </CardHeader>
            <CardTitle className='md:text-4xl -mt-8 mb-8 text-center text-2xl font-bold text-yellow-700'>Valor R$: 135,00</CardTitle>
           
-          
-
-          <CardContent className="px-8 pb-8 -mt-2 md:-mt-4">
+          <CardContent className=" md:-mt-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="tipo" className="text-base font-semibold text-gray-700 text-start block">
@@ -350,16 +348,17 @@ const UniformForm: React.FC = () => {
               </Button>
             </form>
           </CardContent>
-        </Card>
-
-        <div onClick={() => setShowUniformsList(true)} className="flex cursor-pointer items-center justify-center mt-6 p-4 bg-white/80 rounded-xl mx-8">
-            <div className="flex items-center space-x-4">
+          <div onClick={() => setShowUniformsList(true)} className="flex cursor-pointer items-center justify-center  rounded-xl mx-8">
+            <div className="flex items-center space-x-4 mb-4">
               <div className="flex items-center space-x-2">
                 <List className="w-5 h-5 text-gray-600" />
                 <span className="font-medium text-gray-700">Ver Lista</span>
               </div>
             </div>
           </div>
+        </Card>
+
+        
       </div>
 
       {/* Modal de Confirmação de Sucesso */}
