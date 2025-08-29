@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import jogador1 from '../assets/jogador-1.jpg';
 import jogador2 from '../assets/jogador-2.jpg';
 import logo from '../assets/jumentus.png';
+import Modal from './ui/modal';
 
 const UniformForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +28,10 @@ const UniformForm: React.FC = () => {
     message: string;
     existingAthlete?: string;
   }>({ status: 'idle', message: '' });
+
+  // Estados para o modal de confirmação
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submittedData, setSubmittedData] = useState<UniformFormData | null>(null);
 
   // Debug das imagens
   useEffect(() => {
@@ -136,6 +141,8 @@ const UniformForm: React.FC = () => {
       setMessage('Uniforme salvo com sucesso!');
       reset();
       setNumberValidation({ status: 'idle', message: '' });
+      setSubmittedData(data); // Armazena os dados submetidos
+      setShowSuccessModal(true); // Abre o modal de sucesso
     } catch (error) {
       console.error('Erro ao salvar:', error);
       setSubmitStatus('error');
@@ -143,6 +150,11 @@ const UniformForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    setSubmittedData(null);
   };
 
   return (
@@ -331,6 +343,58 @@ const UniformForm: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de Confirmação de Sucesso */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={closeSuccessModal}
+        title="Uniforme Cadastrado!"
+      >
+        <div className="text-center">
+          <div className="mb-4">
+            <CheckCircle className="w-16 h-16 text-green-600 mx-auto" />
+          </div>
+          
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Cadastro realizado com sucesso!
+          </h3>
+          
+          {submittedData && (
+            <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <h4 className="font-medium text-gray-700 mb-2">Detalhes do Uniforme:</h4>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span className="font-medium">Atleta:</span>
+                  <span>{submittedData.nome}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Número:</span>
+                  <span>{submittedData.numero}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Tipo:</span>
+                  <span>{submittedData.tipo}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Tamanho:</span>
+                  <span>{submittedData.tamanho}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <p className="text-gray-600 mb-6">
+            O uniforme foi salvo no sistema e está disponível para consulta.
+          </p>
+          
+          <Button
+            onClick={closeSuccessModal}
+            className="w-full bg-[#D4B301] hover:bg-[#B89400] text-[#2C2E30] font-bold py-3 rounded-xl transition-all duration-200"
+          >
+            Fechar
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };
